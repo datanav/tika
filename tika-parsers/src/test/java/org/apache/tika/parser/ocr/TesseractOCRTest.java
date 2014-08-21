@@ -25,25 +25,25 @@ public class TesseractOCRTest  extends TikaTest {
 
     @Test
     public void testPDFOCR() throws Exception {
-        // We are to avoid redirecting of pdf documents to PDFParser
-        Parser parser = new TesseractOCRParser();
+        Parser parser = new AutoDetectParser();
         BodyContentHandler handler = new BodyContentHandler();
         Metadata metadata = new Metadata();
 
         TesseractOCRConfig config = new TesseractOCRConfig();
-        //PDFParserConfig pdfConfig = new PDFParserConfig();
-        //pdfConfig.setExtractInlineImages(true);
+        PDFParserConfig pdfConfig = new PDFParserConfig();
+        pdfConfig.setExtractInlineImages(true);
 
         ParseContext parseContext = new ParseContext();
         parseContext.set(TesseractOCRConfig.class, config);
         parseContext.set(Parser.class, new TesseractOCRParser());
-        //parseContext.set(PDFParserConfig.class, pdfConfig);
+        parseContext.set(PDFParserConfig.class, pdfConfig);
 
         InputStream stream = TesseractOCRTest.class.getResourceAsStream(
                 "/test-documents/testOCR.pdf");
 
         try {
             parser.parse(stream, handler, metadata, parseContext);
+            System.out.println(handler.toString() + "ZZZZ");
             assertTrue(handler.toString().contains("Happy New Year 2003!"));
         } catch (IOException e) {
             String msg = e.getCause().getMessage();
