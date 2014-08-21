@@ -37,6 +37,7 @@ import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.metadata.XMPDM;
 import org.apache.tika.mime.MediaType;
+import org.apache.tika.parser.ocr.TesseractOCRTest;
 import org.apache.tika.sax.BodyContentHandler;
 import org.gagravarr.tika.FlacParser;
 import org.gagravarr.tika.OpusParser;
@@ -249,10 +250,17 @@ public class AutoDetectParserTest {
     
     @Test
     public void testImages() throws Exception {
-       assertAutoDetect("testBMP.bmp", BMP, null);
-       assertAutoDetect("testGIF.gif", GIF, null);
-       assertAutoDetect("testJPEG.jpg", JPEG, null);
-       assertAutoDetect("testPNG.png", PNG, null);
+       try {
+           assertAutoDetect("testBMP.bmp", BMP, null);
+           assertAutoDetect("testGIF.gif", GIF, null);
+           assertAutoDetect("testJPEG.jpg", JPEG, null);
+           assertAutoDetect("testPNG.png", PNG, null);
+       } catch (TikaException e) {
+           String msg = e.getCause().getMessage();
+           // Checking if test fails due to missing tesseract. Ignore if that is the case
+           assertTrue(TesseractOCRTest.tessractMissing(e.getCause().getMessage()));
+       }
+
    }
 
     /**
