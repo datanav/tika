@@ -111,7 +111,7 @@ public class TesseractOCRParser extends AbstractParser {
         
     	TesseractOCRConfig config = context.get(TesseractOCRConfig.class);
     	if(config == null)
-    		return;
+    		config = new TesseractOCRConfig();
     	
     	XHTMLContentHandler xhtml = new XHTMLContentHandler(handler, metadata);
     	xhtml.startDocument();
