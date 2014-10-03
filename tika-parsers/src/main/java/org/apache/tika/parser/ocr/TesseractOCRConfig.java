@@ -17,62 +17,106 @@
 package org.apache.tika.parser.ocr;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
-
+import java.util.Properties;
 /**
  * Configuration for TesseractOCRParser.
- * 
+ *
  * This allows to enable TesseractOCRParser and set its parameters:
  * <p>
  * TesseractOCRConfig config = new TesseractOCRConfig();<br>
  * config.setTesseractPath(tesseractFolder);<br>
  * parseContext.set(TesseractOCRConfig.class, config);<br>
  * </p>
- * 
- * 
+ *
+ *
  */
 public class TesseractOCRConfig implements Serializable{
 
 	private static final long serialVersionUID = -4861942486845757891L;
-	
+
 	// Path to tesseract installation folder, if not on system path.
 	private  String tesseractPath = "";
-	
+
 	// Language dictionary to be used.
 	private  String language = "eng";
-	
+
 	// Tesseract page segmentation mode.
 	private  String pageSegMode = "1";
-	
+
 	// Minimum file size to submit file to ocr.
 	private  int minFileSizeToOcr = 0;
-	
+
 	// Maximum file size to submit file to ocr.
 	private  int maxFileSizeToOcr = Integer.MAX_VALUE;
-	
+
 	// Maximum time (seconds) to wait for the ocring process termination
 	private int timeout = 120;
-	
-	/** @see #setTesseractPath(String tesseractPath)*/
+
+	public TesseractOCRConfig() {
+		init(this.getClass().getResourceAsStream("TesseractOCRConfig.properties"));
+	}
+
+	private void init(InputStream is) throws NumberFormatException {
+
+		if (is == null) {
+		    return;
+		}
+
+		Properties props = new Properties();
+		try {
+		    props.load(is);
+		} catch (IOException e) {
+		    return;
+		} finally {
+		    if (is != null) {
+			try{
+			    is.close();
+			} catch (IOException e) {
+			    //swallow
+			}
+		    }
+		}
+
+                if (props.getProperty("tesseractPath") != null)
+                    setTesseractPath(props.getProperty("tesseractPath"));
+
+                if (props.getProperty("language") != null)
+                    setLanguage(props.getProperty("language"));
+
+                if (props.getProperty("pageSegMode") != null)
+                    setPageSegMode(props.getProperty("pageSegMode"));
+
+                if (props.getProperty("minFileSizeToOcr") != null)
+                    setMinFileSizeToOcr(Integer.parseInt(props.getProperty("minFileSizeToOcr")));
+                if (props.getProperty("maxFileSizeToOcr") != null)
+                    setMaxFileSizeToOcr(Integer.parseInt(props.getProperty("maxFileSizeToOcr")));
+                if (props.getProperty("timeout") != null)
+                    setTimeout(Integer.parseInt(props.getProperty("timeout")));
+	}
+
+     /** @see #setTesseractPath(String tesseractPath)*/
 	public String getTesseractPath() {
 		return tesseractPath;
 	}
-	
+
 	/**
 	 * Set tesseract installation folder, needed if it is not on system path.
 	 */
 	public void setTesseractPath(String tesseractPath) {
 		if(!tesseractPath.endsWith(File.separator))
 			tesseractPath += File.separator;
-		
+
 		this.tesseractPath = tesseractPath;
 	}
-	
+
 	/** @see #setLanguage(String language)*/
 	public String getLanguage() {
 		return language;
 	}
-	
+
 	/**
 	 * Set tesseract language dictionary to be used. Default is "eng".
 	 * Multiple languages may be specified, separated by plus characters.
@@ -80,12 +124,12 @@ public class TesseractOCRConfig implements Serializable{
 	public void setLanguage(String language) {
 		this.language = language;
 	}
-	
+
 	/** @see #setPageSegMode(String pageSegMode)*/
 	public String getPageSegMode() {
 		return pageSegMode;
 	}
-	
+
 	/**
 	 * Set tesseract page segmentation mode.
 	 * Default is 1 = Automatic page segmentation with OSD (Orientation and Script Detection)
@@ -93,12 +137,12 @@ public class TesseractOCRConfig implements Serializable{
 	public void setPageSegMode(String pageSegMode) {
 		this.pageSegMode = pageSegMode;
 	}
-	
+
 	/** @see #setMinFileSizeToOcr(int minFileSizeToOcr)*/
 	public int getMinFileSizeToOcr() {
 		return minFileSizeToOcr;
 	}
-	
+
 	/**
 	 * Set minimum file size to submit file to ocr.
 	 * Default is 0.
@@ -106,12 +150,12 @@ public class TesseractOCRConfig implements Serializable{
 	public void setMinFileSizeToOcr(int minFileSizeToOcr) {
 		this.minFileSizeToOcr = minFileSizeToOcr;
 	}
-	
+
 	/** @see #setMaxFileSizeToOcr(int maxFileSizeToOcr)*/
 	public int getMaxFileSizeToOcr() {
 		return maxFileSizeToOcr;
 	}
-	
+
 	/**
 	 * Set maximum file size to submit file to ocr.
 	 * Default is Integer.MAX_VALUE.
@@ -132,5 +176,5 @@ public class TesseractOCRConfig implements Serializable{
 	public int getTimeout() {
 		return timeout;
 	}
-	
+
 }
